@@ -6,6 +6,8 @@ from PIL import Image
 from pillow_heif import register_heif_opener
 import numpy as np
 
+import winsound
+
 register_heif_opener()
 
 # Set path to photos
@@ -89,3 +91,5 @@ files_faces_array = np.array(files_faces)
 np.savetxt("C:\\Users\\Franc\\Downloads\\TP-Nuestras-Caras\\faces_numpy.csv", flat_faces_array, delimiter=',')
 np.savetxt("C:\\Users\\Franc\\Downloads\\TP-Nuestras-Caras\\names_numpy.csv", names_faces_array, delimiter=',', fmt='%s')
 np.savetxt("C:\\Users\\Franc\\Downloads\\TP-Nuestras-Caras\\files_numpy.csv", files_faces_array, delimiter=',', fmt='%s')
+
+winsound.Beep(640,2000)
