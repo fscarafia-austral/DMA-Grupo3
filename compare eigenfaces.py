@@ -3,12 +3,12 @@ import pandas as pd
 from sklearn.decomposition import PCA  
 
 #leer el numpy arrange
-flat_faces_np = np.loadtxt("C:\\Users\\Franc\\Downloads\\TP-Nuestras-Caras\\faces_numpy.csv", delimiter=",")
+flat_faces_np = np.loadtxt(".\\faces_numpy.csv", delimiter=",")
 
-names_faces_np = pd.read_csv("C:\\Users\\Franc\\Downloads\\TP-Nuestras-Caras\\names_numpy.csv", delimiter=",",header = None)
+names_faces_np = pd.read_csv(".\\names_numpy.csv", delimiter=",",header = None)
 names_faces = names_faces_np.values
 
-files_faces_np = pd.read_csv("C:\\Users\\Franc\\Downloads\\TP-Nuestras-Caras\\files_numpy.csv", delimiter=",",header = None)
+files_faces_np = pd.read_csv(".\\files_numpy.csv", delimiter=",",header = None)
 files_faces = files_faces_np.values
 
 pca = PCA(n_components= 63)
