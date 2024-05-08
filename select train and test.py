@@ -67,3 +67,4 @@ print(f'Nro de componentes a utilizar en el PCA : {pca.n_components_}')
 
 #Algoritmo de Gustavo Denicolay
 # 16 Definiciones preliminares del algoritmo de Denicolay para RN con 1 capa oculta
+##
