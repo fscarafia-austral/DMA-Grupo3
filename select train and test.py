@@ -14,12 +14,12 @@ import matplotlib.pyplot as plt
 plt.ioff()
 
 #leer el numpy arrange
-flat_faces_np = np.loadtxt("/home/gugui/Documentos/Austral/Data mining avanzado/Trabajo_practico/DMA-Grupo3-main/faces_numpy.csv", delimiter=",")
+flat_faces_np = np.loadtxt("./faces_numpy.csv", delimiter=",")
 
-names_faces_np = pd.read_csv("/home/gugui/Documentos/Austral/Data mining avanzado/Trabajo_practico/DMA-Grupo3-main/names_numpy.csv", delimiter=",",header = None)
+names_faces_np = pd.read_csv("./names_numpy.csv", delimiter=",",header = None)
 names_faces = names_faces_np.values
 
-files_faces_np = pd.read_csv("/home/gugui/Documentos/Austral/Data mining avanzado/Trabajo_practico/DMA-Grupo3-main/files_numpy.csv", delimiter=",",header = None)
+files_faces_np = pd.read_csv("./files_numpy.csv", delimiter=",",header = None)
 files_faces = files_faces_np.values
 
 # Separacion en training y test
@@ -44,7 +44,7 @@ np.random.seed(1957)
 # Loop para seleccionar 3 fotos de cada uno p/el test y el resto quedan para training
 for i in names_faces_uniq:
     face_position = np.where(names_faces == i)[0]
-    aux_for_test = np.random.choice(face_position, 3, replace=False)
+    aux_for_test = np.random.choice(face_position, 4, replace=False) #Seleccionamos 4 fotos para test en vez de 3, para poder hacer el PCA de Test
     aux_for_train = np.setdiff1d(face_position, aux_for_test)
     pos_for_test.append(aux_for_test)
     pos_for_train.append(aux_for_train)
@@ -253,4 +253,59 @@ print('Hay {} errores en el conjunto de training sobre un total de {} imagenes'.
 
 print(f'Error medio cuadrático {Error} en training')
 
-print(f'Accuracy {(len(traning_Z) - np.sum(ierror))/len(traning_Z)} en training')   
+print(f'Accuracy {(len(traning_Z) - np.sum(ierror))/len(traning_Z)} en training')
+
+###################################################################################################
+# 19 Cálculo de accuracy para testing set de RN de Denicolay de 1 capa oculta
+
+test_pca = PCA(n_components = 63, svd_solver = 'full')
+test_pca.fit(test_faces)
+test_Z = test_pca.transform(test_faces)[:,3:] 
+
+test_label_encoder = LabelEncoder()
+test_label_binarizer = LabelBinarizer()
+test_label_encoder.fit(test_names)
+test_names_num = test_label_binarizer.fit_transform(test_names)
+test_int_num = test_label_encoder.transform(test_names)
+
+entrada = test_Z
+salida = test_names_num
+
+#print(salida.shape)
+
+# Paso las listas a numpy
+X = np.array(entrada)
+#Y = np.array(salida).reshape(len(X),1)
+Y = np.array(salida)
+
+#print(Y)
+
+hidden_estimulos_1 = W1 @ X.T + X01
+hidden_salidas_1 = func_eval_vec(hidden_FUNC, hidden_estimulos_1)
+hidden_estimulos_2 = W2 @ hidden_salidas_1 + X02
+hidden_salidas_2 = func_eval_vec(hidden_FUNC, hidden_estimulos_2)
+output_estimulos = W3 @ hidden_salidas_2 + X03
+output_salidas = func_eval_vec(output_FUNC, output_estimulos)
+
+# calculo el error promedio
+Error= np.mean( (Y.T - output_salidas)**2 )
+# 20 Detalle de accuracy y error para testing set de RN de Denicolay de 1 capa oculta
+
+ierror = (np.argmax(output_salidas, axis=0) - np.array(test_int_num) != 0)
+
+cont = 0
+for i in range(57):
+    if ierror[i]:
+        cont += 1
+        print(f'Error nro {cont}')
+        print(f'Valor real: {test_names[i]}')
+        print(f'Valor predicho: {test_names[np.argmax(output_salidas, axis=0)[i]]}\n')
+
+print(np.argmax(output_salidas, axis=0))
+# Cuántos hay
+print('Hay {} errores en el conjunto de testing sobre un total de {} imagenes'.format(np.sum(ierror),
+len(test_Z)))
+
+print(f'Error medio cuadrático {Error} en testing')
+
+print(f'Accuracy {(len(test_Z) - np.sum(ierror))/len(test_Z)} en testing')
