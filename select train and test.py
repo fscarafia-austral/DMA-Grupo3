@@ -6,7 +6,12 @@ import math
 import matplotlib.pyplot as plt
 from mlxtend.preprocessing import standardize
 from sklearn.preprocessing import LabelEncoder
-from keras.utils import to_categorical
+#from keras.utils import to_categorical
+from sklearn.preprocessing import LabelBinarizer
+import matplotlib.pyplot as plt
+
+# Desactivar el modo interactivo
+plt.ioff()
 
 #leer el numpy arrange
 flat_faces_np = np.loadtxt("/home/gugui/Documentos/Austral/Data mining avanzado/Trabajo_practico/DMA-Grupo3-main/faces_numpy.csv", delimiter=",")
@@ -123,15 +128,16 @@ deriv_eval_vec = np.vectorize(deriv_eval)
 
 
 label_encoder = LabelEncoder()
+label_binarizer = LabelBinarizer()
 label_encoder.fit(training_names)
-training_names_num = label_encoder.transform(training_names)
-
+training_names_num = label_binarizer.fit_transform(training_names)
+training_int_num = label_encoder.transform(training_names)
 
 
 #Leo el dataset del cero completo y lo separo en entrada y salida
 dataframe = traning_Z
 entrada = traning_Z
-salida = to_categorical(training_names_num, num_classes = 19)
+salida = training_names_num
 
 # Paso las listas a numpy
 X = np.array(entrada)
@@ -178,7 +184,7 @@ Error= np.mean( (Y.T - output_salidas)**2 )
 
 
 # Inicializo
-epoch_limit = 10  # para terminar si no converge
+epoch_limit = 1000  # para terminar si no converge
 Error_umbral = 1.0e-12
 learning_rate = 0.2
 Error_last = 10    # lo debo poner algo dist a 0 la primera vez
@@ -238,9 +244,11 @@ while (math.fabs(Error_last-Error)>Error_umbral and (epoch < epoch_limit)):
    
 # 22 Cálculo de Accuracy para training set de RN de Denicolay con 2 capas ocultas
 
-ierror = (np.argmax(output_salidas, axis=0) - np.array(training_names_num) != 0)
+ierror = (np.argmax(output_salidas, axis=0) - np.array(training_int_num) != 0)
 
 # Cuántos hay
+print(epoch)
+
 print('Hay {} errores en el conjunto de training sobre un total de {} imagenes'.format(np.sum(ierror), len(traning_Z)))
 
 print(f'Error medio cuadrático {Error} en training')
