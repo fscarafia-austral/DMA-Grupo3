@@ -145,8 +145,8 @@ Y = np.array(salida)
 
 filas_qty = len(X)
 input_size = X.shape[1]   # 188 entradas
-hidden_size_1 = 20  # neuronas capa oculta 1
-hidden_size_2 = 20  # neuronas capa oculta 2
+hidden_size_1 = 100  # neuronas capa oculta 1
+hidden_size_2 = 50  # neuronas capa oculta 2
 output_size = Y.shape[1]  # 1 neurona capa final output
 
 
@@ -184,9 +184,9 @@ Error= np.mean( (Y.T - output_salidas)**2 )
 
 
 # Inicializo
-epoch_limit = 1000  # para terminar si no converge
-Error_umbral = 1.0e-12
-learning_rate = 0.2
+epoch_limit = 100000  # para terminar si no converge
+Error_umbral = 1.0e-22
+learning_rate = 10.0
 Error_last = 10    # lo debo poner algo dist a 0 la primera vez
 epoch = 0
 
@@ -294,13 +294,14 @@ Error= np.mean( (Y.T - output_salidas)**2 )
 ierror = (np.argmax(output_salidas, axis=0) - np.array(test_int_num) != 0)
 
 cont = 0
-for i in range(57):
+for i in range(76):
     if ierror[i]:
         cont += 1
         print(f'Error nro {cont}')
         print(f'Valor real: {test_names[i]}')
         print(f'Valor predicho: {test_names[np.argmax(output_salidas, axis=0)[i]]}\n')
 
+print(output_salidas)
 print(np.argmax(output_salidas, axis=0))
 # Cuántos hay
 print('Hay {} errores en el conjunto de testing sobre un total de {} imagenes'.format(np.sum(ierror),
