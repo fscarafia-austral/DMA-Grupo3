@@ -79,12 +79,15 @@ test_faces = test_faces.astype('float64')
 
 test_faces = test_faces/255.0
 
+# antes de empezar PCA, aumentamos la cantidad de fotos del dataset
+
+
 #7 Se ejecuta PCA y se calcula la cantidad de componentes
 # que explican el 90% de variabilidad 
 
-pca = PCA(n_components = 63, svd_solver = 'full')
+pca = PCA(n_components = 60, svd_solver = 'full')
 pca.fit(training_faces)
-traning_Z = pca.transform(training_faces)[:,3:] 
+traning_Z = pca.transform(training_faces) 
 
 print(f'Nro de componentes a utilizar en el PCA : {pca.n_components_}')
 
@@ -184,9 +187,9 @@ Error= np.mean( (Y.T - output_salidas)**2 )
 
 
 # Inicializo
-epoch_limit = 100000  # para terminar si no converge
+epoch_limit = 100  # para terminar si no converge
 Error_umbral = 1.0e-22
-learning_rate = 10.0
+learning_rate = 0.2
 Error_last = 10    # lo debo poner algo dist a 0 la primera vez
 epoch = 0
 
@@ -241,6 +244,7 @@ while (math.fabs(Error_last-Error)>Error_umbral and (epoch < epoch_limit)):
 
     # calculo el error promedio general de TODOS los X
     Error= np.mean( (Y.T - output_salidas)**2 )
+    print(epoch)
    
 # 22 Cálculo de Accuracy para training set de RN de Denicolay con 2 capas ocultas
 
@@ -258,9 +262,9 @@ print(f'Accuracy {(len(traning_Z) - np.sum(ierror))/len(traning_Z)} en training'
 ###################################################################################################
 # 19 Cálculo de accuracy para testing set de RN de Denicolay de 1 capa oculta
 
-test_pca = PCA(n_components = 63, svd_solver = 'full')
+test_pca = PCA(n_components = 60, svd_solver = 'full')
 test_pca.fit(test_faces)
-test_Z = test_pca.transform(test_faces)[:,3:] 
+test_Z = test_pca.transform(test_faces)
 
 test_label_encoder = LabelEncoder()
 test_label_binarizer = LabelBinarizer()
@@ -291,7 +295,8 @@ output_salidas = func_eval_vec(output_FUNC, output_estimulos)
 Error= np.mean( (Y.T - output_salidas)**2 )
 # 20 Detalle de accuracy y error para testing set de RN de Denicolay de 1 capa oculta
 
-ierror = (np.argmax(output_salidas, axis=0) - np.array(test_int_num) != 0)
+predicciones = np.argmax(output_salidas, axis=0)
+ierror = (predicciones - np.array(test_int_num) != 0)
 
 cont = 0
 for i in range(76):
@@ -299,7 +304,12 @@ for i in range(76):
         cont += 1
         print(f'Error nro {cont}')
         print(f'Valor real: {test_names[i]}')
-        print(f'Valor predicho: {test_names[np.argmax(output_salidas, axis=0)[i]]}\n')
+        print(f'Valor predicho: {names_faces_uniq[np.argmax(output_salidas, axis=0)[i]]}\n')
+    
+    if not ierror[i]:
+        print('Predicción correcta')
+        print(f'Valor real: {test_names[i]}')
+        print(f'Valor predicho: {names_faces_uniq[np.argmax(output_salidas, axis=0)[i]]}\n')
 
 print(output_salidas)
 print(np.argmax(output_salidas, axis=0))
