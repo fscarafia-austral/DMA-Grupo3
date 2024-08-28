@@ -86,11 +86,14 @@ training_names_extra = []
 training_files_extra = []
 for i in range(training_faces.shape[0]):
     training_faces_matrix = training_faces[i].reshape(30, 30)
-    face_flipped = np.fliplr(training_faces_matrix)
     
+    # Cara flippeada
+    face_flipped = np.fliplr(training_faces_matrix)
     training_faces_extra.append(face_flipped.flatten())
     training_names_extra.append(training_names[i])
     training_files_extra.append(training_files[i] + "_flipped")
+    
+    # Cara rolleada ? Que otras transformaciones ?
 
 training_faces_extra = np.array(training_faces_extra, dtype = object) 
 training_faces_extra = training_faces_extra.astype('float64')
