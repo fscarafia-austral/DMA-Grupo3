@@ -80,7 +80,26 @@ test_faces = test_faces.astype('float64')
 test_faces = test_faces/255.0
 
 # antes de empezar PCA, aumentamos la cantidad de fotos del dataset
+#volvemos un segundo a las matrices 30x30, para trabajarlas
+training_faces_extra = []
+training_names_extra = []
+training_files_extra = []
+for i in range(training_faces.shape[0]):
+    training_faces_matrix = training_faces[i].reshape(30, 30)
+    face_flipped = np.fliplr(training_faces_matrix)
+    
+    training_faces_extra.append(face_flipped.flatten())
+    training_names_extra.append(training_names[i])
+    training_files_extra.append(training_files[i] + "_flipped")
 
+training_faces_extra = np.array(training_faces_extra, dtype = object) 
+training_faces_extra = training_faces_extra.astype('float64')
+
+training_faces = np.concatenate((training_faces, training_faces_extra), axis=0)
+training_names = np.concatenate((training_names, training_names_extra), axis=0)
+training_files = np.concatenate((training_files, training_files_extra), axis=0)
+
+# A PARTIR DE ACÁ CREAR NUEVO SCRIPT ?
 
 #7 Se ejecuta PCA y se calcula la cantidad de componentes
 # que explican el 90% de variabilidad 
@@ -187,9 +206,9 @@ Error= np.mean( (Y.T - output_salidas)**2 )
 
 
 # Inicializo
-epoch_limit = 100  # para terminar si no converge
+epoch_limit = 10  # para terminar si no converge
 Error_umbral = 1.0e-22
-learning_rate = 0.2
+learning_rate = 0.1
 Error_last = 10    # lo debo poner algo dist a 0 la primera vez
 epoch = 0
 
