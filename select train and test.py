@@ -10,6 +10,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import LabelBinarizer
 import matplotlib.pyplot as plt
 
+#from augment.autoaugment import ImageNetPolicy
+#from augment.cutout import Cutout
+from albumentations import HorizontalFlip, RandomBrightnessContrast, Compose
+
 # Desactivar el modo interactivo
 plt.ioff()
 
@@ -88,12 +92,13 @@ for i in range(training_faces.shape[0]):
     training_faces_matrix = training_faces[i].reshape(30, 30)
     
     # Cara flippeada
-    face_flipped = np.fliplr(training_faces_matrix)
-    training_faces_extra.append(face_flipped.flatten())
-    training_names_extra.append(training_names[i])
-    training_files_extra.append(training_files[i] + "_flipped")
+    # face_flipped = np.fliplr(training_faces_matrix)
+    # training_faces_extra.append(face_flipped.flatten())
+    # training_names_extra.append(training_names[i])
+    # training_files_extra.append(training_files[i] + "_flipped")
     
-    # Cara rolleada ? Que otras transformaciones ?
+    # Augmentor
+    
 
 training_faces_extra = np.array(training_faces_extra, dtype = object) 
 training_faces_extra = training_faces_extra.astype('float64')
@@ -209,7 +214,7 @@ Error= np.mean( (Y.T - output_salidas)**2 )
 
 
 # Inicializo
-epoch_limit = 10  # para terminar si no converge
+epoch_limit = 50  # para terminar si no converge
 Error_umbral = 1.0e-22
 learning_rate = 0.1
 Error_last = 10    # lo debo poner algo dist a 0 la primera vez
