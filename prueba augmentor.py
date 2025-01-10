@@ -3,7 +3,7 @@ import shutil
 import Augmentor
  
 # Ruta a la carpeta con las imágenes originales
-ruta_imagenes = "C:\DMA-Grupo3\prueba augment"
+ruta_imagenes = ".\output"
  
 # Número total de imágenes deseadas
 numero_total_imagenes = 20
