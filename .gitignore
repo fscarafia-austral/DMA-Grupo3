@@ -1,0 +1,15 @@
+csvs/faces_train.csv
+csvs/names_train.csv
+csvs/files_train.csv
+
+# Ignorar archivos grandes y temporales
+*.csv
+output/
+temp_imagen/
+salida.txt
+
+# Ignorar archivos de Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
