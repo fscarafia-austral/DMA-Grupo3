@@ -67,23 +67,29 @@ class MemoryEfficientImageProcessor:
                 os.unlink(temp.name)
             except OSError:
                 pass
-
-    def read_image_in_chunks(self, img_path: str, chunk_size: int = 1024 * 1024) -> np.ndarray:
+   
+           
+    def read_image_in_chunks(self, img_path: str) -> np.ndarray:
         try:
-            # Leer la imagen directamente en escala de grises
+            # Leer la imagen directamente en escala de grises (ya debería ser 30x30)
             img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
             
             if img is None:
                 self.logger.error(f"No se pudo cargar la imagen: {img_path}")
                 return None
             
-            return img
+            # Verificar que los valores estén dentro del rango [0, 255]
+            if not np.all((img >= 0) & (img <= 255)):
+                self.logger.error(f"Valores fuera de rango en la imagen: {img_path}")
+            
+            return img.astype(np.uint8)  # Asegurarse de que la imagen esté en formato uint8
 
         except Exception as e:
             self.logger.error(f"Error leyendo imagen {img_path}: {e}")
             return None
         finally:
             gc.collect()
+
 
     def process_image_batch(self, image_paths: List[str], person_names: List[str], pbar: tqdm) -> Tuple[List[np.ndarray], List[str], List[str]]:
         batch_faces = []
@@ -118,46 +124,34 @@ class MemoryEfficientImageProcessor:
             del img_path, persona
             gc.collect()
 
+            
     def save_batch_to_disk(self, batch_faces: List[np.ndarray], batch_names: List[str], batch_files: List[str], csv_paths: Tuple[str, str, str]) -> None:
         faces_path, names_path, files_path = csv_paths
         
         try:
-            with self.temp_file() as temp_path:
-                shape = (len(batch_faces), len(batch_faces[0]))
-                mm = np.memmap(temp_path, dtype='float64', mode='w+', shape=shape)
-                
-                # Escribir en chunks más pequeños
-                chunk_size = 5000  # Reducido para menor uso de memoria
-                for i in range(0, len(batch_faces), chunk_size):
-                    chunk = batch_faces[i:i + chunk_size]
-                    mm[i:i + len(chunk)] = chunk
-                    del chunk  # Liberar chunk después de escribir
-                    gc.collect()
-                
-                mm.flush()
-                del mm
-                
-                # Copiar al archivo final en chunks
-                with open(faces_path, 'ab') as f_faces:
-                    with open(temp_path, 'rb') as f_temp:
-                        while True:
-                            chunk = f_temp.read(1024*1024)  # 1MB chunks
-                            if not chunk:
-                                break
-                            f_faces.write(chunk)
-                            del chunk
-                            gc.collect()
-
-            # Escribir nombres y archivos
-            for data, path in [(batch_names, names_path), (batch_files, files_path)]:
-                with open(path, 'a') as f:
-                    for item in data:
-                        f.write(f"{item}\n")
-                        
+            # Guardar las caras como enteros de 0 a 255
+            with open(faces_path, 'a') as f_faces:
+                for face in batch_faces:
+                    # Asegurarnos de que la imagen esté en tipo uint8 y escribirla como una fila en el CSV
+                    face = face.astype(np.uint8)
+                    face_str = ','.join(map(str, face))  # Convertir cada valor de la cara a string
+                    f_faces.write(f"{face_str}\n")
+            
+            # Escribir los nombres y archivos
+            with open(names_path, 'a') as f_names:
+                for name in batch_names:
+                    f_names.write(f"{name}\n")
+            
+            with open(files_path, 'a') as f_files:
+                for file in batch_files:
+                    f_files.write(f"{file}\n")
+                    
         finally:
             # Limpiar variables
             del batch_faces
             gc.collect()
+            
+            
 
     def process_dataset(self, tipo: str, batch_size: int = 500) -> None:
         try:
@@ -171,8 +165,8 @@ class MemoryEfficientImageProcessor:
             for path in csv_paths:
                 open(path, 'w').close()
             
-            #nombres_personas = sorted(os.listdir(ruta_imagenes))
-            nombres_personas = ['Abel']
+            nombres_personas = sorted(os.listdir(ruta_imagenes))
+            
             
             with tqdm(total=len(nombres_personas), desc=f"👤 Procesando personas ({tipo})", 
                      unit="persona", position=0) as pbar_personas:
