@@ -5,14 +5,15 @@ import numpy as np
 import cv2
  
 # Ruta a la carpeta con las imágenes originales
-ruta_imagenes = "C:\\Repositorios-Ing.Carlos-Cicconi\\DMA-Grupo3\\output\\"
+# ruta_imagenes = "C:\\Repositorios-Ing.Carlos-Cicconi\\DMA-Grupo3\\output\\"
+ruta_imagenes = "C:\\DMA-Grupo3\\output\\"
 
 # Read names
 names = []
 for dir in os.listdir(ruta_imagenes):
     names.append(dir)
 names.count
-names = np.unique(names)
+names = np.unique(names)[4:5]
 
 # Número total de imágenes deseadas
 numero_total_imagenes = 10000
@@ -30,14 +31,15 @@ print(f"Se generarán {imagenes_por_imagen_original} imágenes por cada imagen o
 # os.makedirs(carpeta_output, exist_ok=True)
 
 # Crear una carpeta temporal para procesar una imagen a la vez
-carpeta_temporal = "C:\\Repositorios-Ing.Carlos-Cicconi\\DMA-Grupo3\\temp_imagen"
-# os.makedirs(carpeta_temporal, exist_ok=True)
+carpeta_temporal = "C:\\DMA-Grupo3\\temp_imagen"
+os.makedirs(carpeta_temporal, exist_ok=True)
 
 # Iterar sobre cada imagen en la carpeta original
 for person in names:
     person_path = ruta_imagenes + person + "\\train\\"
     print(person_path)    
-    for imagen in os.listdir(person_path):
+    fotos_train = os.listdir(person_path)
+    for imagen in fotos_train:
         print(imagen)
         for archivo in os.listdir(carpeta_temporal):
             os.remove(os.path.join(carpeta_temporal, archivo))
@@ -66,11 +68,14 @@ names_faces_train = np.array([])
 files_faces_train = np.array([])
 
 for person in names:
-    current_dir = path + person + "\\"
+    current_dir = ruta_imagenes + person + "\\train\\"
     print("Current person is: " + person)
     for raw_img in os.listdir(current_dir):            
         j = 0
-        img = cv2.imread(raw_img)
+        img = cv2.imread(current_dir + raw_img, cv2.IMREAD_GRAYSCALE)
+        img_2 = cv2.resize(img, (30,30))
+        print(img)
+        
     # Detect the face
         face = face_classifier.detectMultiScale(img, scaleFactor=1.1, minNeighbors=6)
         for x, y, w, h in face:
