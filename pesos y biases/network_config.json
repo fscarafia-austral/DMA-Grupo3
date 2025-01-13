@@ -1,0 +1,19 @@
+{
+    "input_size": 60,
+    "hidden_sizes": [
+        120,
+        80,
+        40
+    ],
+    "output_size": 19,
+    "learning_rate": 0.0003,
+    "epoch_limit": 400,
+    "error_threshold": 1e-06,
+    "activation_functions": [
+        "tansig",
+        "tansig",
+        "tansig",
+        "softmax"
+    ],
+    "batch_size": 32
+}
