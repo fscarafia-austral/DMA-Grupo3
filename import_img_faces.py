@@ -70,7 +70,7 @@ for person in names:
         temp_img.save(current_dir + jpg_photo)
     i = 0
     
-    os.makedirs(output_path + person)
+    # os.makedirs(output_path + person)
     output_path_person = output_path + person + "\\"
     
     for file in os.listdir(current_dir):
@@ -92,7 +92,7 @@ for person in names:
                 
                 # number = str(x)
                 # cv2.imwrite(output_path + file + "-" + number + ".jpg", gray_img)
-                cv2.imwrite(output_path_person + file + "-" + str(i) + "-" + str(j) + ".jpg", gray_img)
+                # cv2.imwrite(output_path_person + file + "-" + str(i) + "-" + str(j) + ".jpg", gray_img)
                 
                 gray_img_flat = gray_img.flatten()
                 

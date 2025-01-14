@@ -4,7 +4,8 @@ import cv2
 import csv
 
 # Definir el directorio base
-base_dir = os.path.expanduser("~/Documentos/Austral/Austral/Data mining avanzado/Trabajo_practico/DMA-Grupo3-main")
+# base_dir = os.path.expanduser("~/Documentos/Austral/Austral/Data mining avanzado/Trabajo_practico/DMA-Grupo3-main")
+base_dir = "C:\\DMA-Grupo3"
 ruta_imagenes = os.path.join(base_dir, "output")
 
 print(f"Directorio base: {base_dir}")
