@@ -120,9 +120,9 @@ output_salidas = func_eval_vec(output_FUNC, output_estimulos)
 Error= np.mean( (Y.T - output_salidas)**2 )
 
 # Inicializo
-epoch_limit = 500  # para terminar si no converge
+epoch_limit = 1000  # para terminar si no converge
 Error_umbral = 1.0e-11
-learning_rate = 0.8
+learning_rate = 0.3
 Error_last = 10    # lo debo poner algo dist a 0 la primera vez
 epoch = 0
 
